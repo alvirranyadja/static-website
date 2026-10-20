@@ -1,0 +1,6 @@
+*.sh text eol=lf
+*.groovy text eol=lf
+Jenkinsfile text eol=lf
+deploy/reload-static-site text eol=lf
+deploy/sudoers-deploy text eol=lf
+deploy/known_hosts text eol=lf

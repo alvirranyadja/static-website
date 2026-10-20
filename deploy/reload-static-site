@@ -1,0 +1,44 @@
+#!/bin/bash
+# Installé sur la machine de déploiement dans /usr/local/sbin.
+# Le compte deploy ne peut lancer que ce script via sudo.
+set -euo pipefail
+
+ACTION="${1:-reload}"
+CONF_SRC="${2:-/tmp/static-website.conf}"
+CONF_DST="/etc/nginx/conf.d/static-website.conf"
+SNIP_SRC="${3:-/tmp/security-headers.conf}"
+SNIP_DST="/etc/nginx/conf.d/security-headers.conf"
+
+case "$ACTION" in
+  install-config)
+    if [ ! -f "$CONF_SRC" ]; then
+      echo "Config absente : $CONF_SRC" >&2
+      exit 1
+    fi
+    install -m 644 "$CONF_SRC" "$CONF_DST"
+    if [ -f "$SNIP_SRC" ]; then
+      install -m 644 "$SNIP_SRC" "$SNIP_DST"
+    fi
+    ;;
+  reload)
+    ;;
+  *)
+    echo "Action inconnue : $ACTION" >&2
+    exit 1
+    ;;
+esac
+
+nginx -t
+
+if [ -f "$CONF_DST" ] && command -v getenforce >/dev/null 2>&1; then
+  mode="$(getenforce 2>/dev/null || true)"
+  if [ "$mode" = "Enforcing" ] || [ "$mode" = "Permissive" ]; then
+    root_dir="$(sed -n 's/^[[:space:]]*root[[:space:]]\+\([^;]*\);/\1/p' "$CONF_DST" | head -n 1)"
+    root_dir="${root_dir%/current}"
+    if [ -n "$root_dir" ] && [ -d "$root_dir" ]; then
+      chcon -R -t httpd_sys_content_t "$root_dir" || true
+    fi
+  fi
+fi
+
+systemctl reload nginx
