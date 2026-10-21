@@ -7,6 +7,7 @@ ssh_init() {
   : "${DEPLOY_USER:?DEPLOY_USER manquant}"
   : "${DEPLOY_PATH:?DEPLOY_PATH manquant}"
   : "${BUILD_NUMBER:?BUILD_NUMBER manquant}"
+  : "${SSH_KEY:?SSH_KEY manquant}"
 
   if ! [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9._:-]+$ ]]; then
     echo "DEPLOY_HOST invalide." >&2
@@ -31,7 +32,11 @@ ssh_init() {
     echo "Clé d'hôte absente pour ${DEPLOY_HOST} dans deploy/known_hosts." >&2
     exit 1
   fi
-  SSH_OPTS=(-o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN" -o ConnectTimeout=20)
+  if [ ! -f "$SSH_KEY" ]; then
+    echo "Clé privée Jenkins introuvable." >&2
+    exit 1
+  fi
+  SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN" -o ConnectTimeout=20)
 }
 
 ssh_remote() {

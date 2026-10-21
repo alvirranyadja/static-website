@@ -45,7 +45,7 @@ Puis autoriser la clé Jenkins dans `/home/deploy/.ssh/authorized_keys`.
 
 Dans Jenkins (16.192.73.184) : credential « SSH Username with private key », id `deploy-ssh-key`, username `deploy`.
 Job : Pipeline script from SCM, Script Path `Jenkinsfile`.
-Plugins : Git, Pipeline, SSH Agent.
+Plugins : Git, Pipeline. Credential `deploy-ssh-key`.
 
 Groupes de sécurité : 16.192.73.184 vers 16.192.253.80 sur les ports 22 et 80, et le port 80 ouvert aux visiteurs.
 La clé d'hôte de la machine de déploiement est épinglée dans `deploy/known_hosts`.

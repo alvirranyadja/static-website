@@ -3,7 +3,7 @@
 // Déploiement : 16.192.253.80
 //
 // Job Pipeline from SCM, Script Path = Jenkinsfile.
-// Plugins : Git, Pipeline, SSH Agent.
+// Plugins : Git, Pipeline. La clé deploy-ssh-key est lue par withCredentials.
 // Credential SSH Username with private key, id deploy-ssh-key, utilisateur deploy.
 
 library identifier: 'static-website-pipeline@master', retriever: legacySCM(scm)

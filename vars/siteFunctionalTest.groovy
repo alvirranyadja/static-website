@@ -11,7 +11,7 @@ def call() {
         return
     }
     echo 'Test de fonctionnement en échec. Restauration de la release précédente.'
-    sshagent(credentials: [credentialId()]) {
+    withCredentials([sshUserPrivateKey(credentialsId: credentialId(), keyFileVariable: 'SSH_KEY')]) {
         def rolled = sh(script: 'bash ci/rollback.sh', returnStatus: true)
         if (rolled != 0) {
             error("Test de fonctionnement en échec, et le retour arrière a échoué (code ${rolled}).")

@@ -5,7 +5,7 @@ def call() {
         echo 'Déploiement ignoré : réservé à master/main, ou DEPLOY_ENABLED est décoché.'
         return
     }
-    sshagent(credentials: [credentialId()]) {
+    withCredentials([sshUserPrivateKey(credentialsId: credentialId(), keyFileVariable: 'SSH_KEY')]) {
         sh 'bash ci/publish.sh'
     }
 }
